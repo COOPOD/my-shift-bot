@@ -7,7 +7,8 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
-API_TOKEN = os.getenv("BOT_TOKEN", "8671644137:AAE67Gb7SNr6EcxlLBUXBNFfdyRRfr0YZ6Y").strip()
+# Свежий актуальный токен из BotFather
+API_TOKEN = os.getenv("BOT_TOKEN", "8671644137:AAG0_X_8SnpT2t7CsWbw3aA0ERxP2C8RDQs").strip()
 
 dp = Dispatcher()
 
@@ -101,9 +102,11 @@ async def handle(request):
 async def main():
     bot = Bot(token=API_TOKEN)
     
-    # Очищаем подвисшие вебхуки/сессии
-    await bot.delete_webhook(drop_pending_updates=True)
-    
+    try:
+        await bot.delete_webhook(drop_pending_updates=True)
+    except Exception:
+        pass
+        
     print("🚀 Бот успешно запущен!")
     
     app = web.Application()
