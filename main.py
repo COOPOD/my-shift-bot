@@ -7,7 +7,6 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
-# Свежий актуальный токен из BotFather
 API_TOKEN = os.getenv("BOT_TOKEN", "8671644137:AAG0_X_8SnpT2t7CsWbw3aA0ERxP2C8RDQs").strip()
 
 dp = Dispatcher()
@@ -36,24 +35,24 @@ def calculate_stats(data: dict):
 def generate_report(data: dict) -> str:
     day_cnt, night_cnt, day_sum, night_sum, total = calculate_stats(data)
     return (
-        "📊 **Текущий расчет за месяц:**\n\n"
-        f"☀️ **Дневные смены:** {day_cnt} шт. × {data['day_rate']:.0f} = {day_sum:.2f}\n"
-        f"🌙 **Ночные смены:** {night_cnt} шт. × {data['night_rate']:.0f} = {night_sum:.2f}\n"
+        "📊 <b>Текущий расчет за месяц:</b>\n\n"
+        f"☀️ <b>Дневные смены:</b> {day_cnt} шт. × {data['day_rate']:.0f} = {day_sum:.2f}\n"
+        f"🌙 <b>Ночные смены:</b> {night_cnt} шт. × {data['night_rate']:.0f} = {night_sum:.2f}\n"
         f"➖➖➖➖➖➖➖➖➖➖\n"
-        f"💰 **ИТОГО К ВЫПЛАТЕ: {total:.2f}**\n\n"
-        "💡 _Пишите «день» или «ночь», чтобы добавить смену._\n"
-        "⚙️ _Команда /set_rates — изменить тарифы._\n"
-        "↩️ _Команда /cancel — отменить последнюю смену._\n"
-        "🔄 _Команда /reset — сбросить месяц._"
+        f"💰 <b>ИТОГО К ВЫПЛАТЕ: {total:.2f}</b>\n\n"
+        "💡 <i>Пишите «день» или «ночь», чтобы добавить смену.</i>\n"
+        "⚙️ <i>Команда /set_rates — изменить тарифы.</i>\n"
+        "↩️ <i>Команда /cancel — отменить последнюю смену.</i>\n"
+        "🔄 <i>Команда /reset — сбросить месяц.</i>"
     )
 
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
-    await message.answer(generate_report(get_user_data(message.from_user.id)), parse_mode="Markdown")
+    await message.answer(generate_report(get_user_data(message.from_user.id)), parse_mode="HTML")
 
 @dp.message(Command("set_rates"))
 async def cmd_set_rates(message: types.Message, state: FSMContext):
-    await message.answer("Введите новые тарифы через пробел (например: `1000 1300`):", parse_mode="Markdown")
+    await message.answer("Введите новые тарифы через пробел (например: <code>1000 1300</code>):", parse_mode="HTML")
     await state.set_state(RateState.waiting_for_rates)
 
 @dp.message(RateState.waiting_for_rates)
@@ -64,9 +63,9 @@ async def process_rates(message: types.Message, state: FSMContext):
         data["day_rate"], data["night_rate"] = float(parts[0]), float(parts[1])
         await state.clear()
         await message.answer(f"✅ Тарифы обновлены!\n☀️ День: {parts[0]}\n🌙 Ночь: {parts[1]}")
-        await message.answer(generate_report(data), parse_mode="Markdown")
+        await message.answer(generate_report(data), parse_mode="HTML")
     except Exception:
-        await message.answer("❌ Введите два числа через пробел, например: `1000 1200`", parse_mode="Markdown")
+        await message.answer("❌ Введите два числа через пробел, например: <code>1000 1200</code>", parse_mode="HTML")
 
 @dp.message(F.text.lower().in_({"день", "ночь", "day", "night"}))
 async def add_shift(message: types.Message):
@@ -76,7 +75,7 @@ async def add_shift(message: types.Message):
     data["history"].append({"type": shift_type, "date": now_str})
     label = "☀️ Дневная" if shift_type == "day" else "🌙 Ночная"
     await message.answer(f"✅ Засчитана {label} смена ({now_str})")
-    await message.answer(generate_report(data), parse_mode="Markdown")
+    await message.answer(generate_report(data), parse_mode="HTML")
 
 @dp.message(Command("cancel"))
 async def cmd_cancel(message: types.Message):
@@ -87,14 +86,14 @@ async def cmd_cancel(message: types.Message):
         await message.answer(f"🗑 Удалена смена: {label} ({removed['date']})")
     else:
         await message.answer("Список смен пуст.")
-    await message.answer(generate_report(data), parse_mode="Markdown")
+    await message.answer(generate_report(data), parse_mode="HTML")
 
 @dp.message(Command("reset"))
 async def cmd_reset(message: types.Message):
     data = get_user_data(message.from_user.id)
     data["history"] = []
     await message.answer("🔄 Счетчик сброшен!")
-    await message.answer(generate_report(data), parse_mode="Markdown")
+    await message.answer(generate_report(data), parse_mode="HTML")
 
 async def handle(request):
     return web.Response(text="Bot is running!")
