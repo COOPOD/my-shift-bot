@@ -1,6 +1,7 @@
 import asyncio
 import os
 from datetime import datetime
+from aiohttp import web
 from aiogram import Bot, Dispatcher, F, types
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
@@ -95,8 +96,19 @@ async def cmd_reset(message: types.Message):
     await message.answer("🔄 Счетчик сброшен!")
     await message.answer(generate_report(data), parse_mode="Markdown")
 
+async def handle(request):
+    return web.Response(text="Bot is running!")
+
 async def main():
     print("🚀 Бот успешно запущен!")
+    app = web.Application()
+    app.router.add_get("/", handle)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    port = int(os.getenv("PORT", 10000))
+    site = web.TCPSite(runner, "0.0.0.0", port)
+    await site.start()
+    
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
