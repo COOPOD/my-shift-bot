@@ -8,7 +8,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
 # Жёстко заданный токен с очисткой от пробелов и кавычек
-HARDCODED_TOKEN = "8671644137:AAE67Gb7SNr6EcxlLBUXBNFfdyRRfr0YZ6Y"
+HARDCODED_TOKEN = "8671644137:AAGmP44DPveVmyYuhBEhH8DdWy1jmzadoko"
 
 dp = Dispatcher()
 
