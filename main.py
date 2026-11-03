@@ -7,6 +7,9 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
+# Жестко заданный токен без лишних символов
+API_TOKEN = "8671644137:AAE67Gb7SNr6EcxlLBUXBNFfdyRRfr0YZ6Y"
+
 dp = Dispatcher()
 
 class RateState(StatesGroup):
@@ -97,10 +100,9 @@ async def handle(request):
     return web.Response(text="Bot is running!")
 
 async def main():
-    token = os.getenv("BOT_TOKEN", "8671644137:AAE67Gb7SNr6EcxlLBUXBNFfdyRRfr0YZ6Y").strip()
-    bot = Bot(token=token)
-    
+    bot = Bot(token=API_TOKEN)
     print("🚀 Бот успешно запущен!")
+    
     app = web.Application()
     app.router.add_get("/", handle)
     runner = web.AppRunner(app)
